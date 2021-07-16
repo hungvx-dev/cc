@@ -1,0 +1,3 @@
+code_student full_name class_name birthday age
+abc123 | Vo Xuan Hung | 15TCLC1 | 31/10/2000 | 21
+abc123 | Vo Xuan Hung | 15TCLC1 | 31/10/2000 | 21

@@ -1,0 +1,8 @@
+Mã bài báo | Tên bài báo | Tên tạp chí | Loại tạp chí | Số xuất bản | Tập xuất bản | Năm xuất bản | Công ty xuất bản | Tác giả
+AA1|ArticleA|MagazineA|SCI|IV|Eposide1|2021|DHBK|Xuan Hung
+AA2|ArticleB|MagazineB|ISI|IV|Eposide1|2015|DHBK|Ha Anh
+AA3|ArticleC|MagazineC|SCOPUS|IV|Eposide1|2020|DHBK|Mai Nguyen
+AA4|ArticleD|MagazineD|SCI|IV|Eposide1|2010|DHBK|Pham Thang
+AA5|ArticleF|MagazineF|ETC|IV|Eposide1|2012|DHBK|Hong Son
+AA6|ArticleE|MagazineE|ISI|IV|Eposide1|2013|DHBK|Cuong Nguyen
+AA7|ArticleG|MagazineG|SCIE|IV|Eposide1|2020|DHBK|Hoang Thuan
