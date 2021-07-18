@@ -1,0 +1,7 @@
+AA1|ArticleA|MagazineA|SCI|IV|Eposide1|2021|DHBK|Xuan Hung
+AA7|ArticleG|MagazineG|SCIE|IV|Eposide1|2020|DHBK|Hoang Thuan
+AA3|ArticleC|MagazineC|ETC|IV|Eposide1|2020|DHBK|Mai Nguyen
+AA2|ArticleB|MagazineB|ISI|IV|Eposide1|2015|DHBK|Ha Anh
+AA6|ArticleE|MagazineE|ISI|IV|Eposide1|2013|DHBK|Cuong Nguyen
+AA5|ArticleF|MagazineF|ETC|IV|Eposide1|2012|DHBK|Hong Son
+AA4|ArticleD|MagazineD|SCI|IV|Eposide1|2010|DHBK|Pham Thang

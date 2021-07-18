@@ -29,89 +29,6 @@ typedef enum SizeCol SizeCol;
 template <class TypeNode>
 class Helper {
   public:
-    void selectionsort(TypeNode *head, string type, string direction) {
-      TypeNode i, j, min;
-      for (i = head; i->pNext != NULL; i = i->pNext){
-        min = i;
-        for(j = i->pNext; j != NULL; j = j->pNext){
-          if((min)->compareBy((j)->pNext, type, direction)){
-            min = j;
-          }
-          this->swapNode(i, min);
-        }
-      }
-    }
-
-    TypeNode *bubbleSort2(TypeNode *head, string type, string direction) {
-      int swapped;
-      TypeNode **ptr1;
-      TypeNode *lptr = NULL;
-
-      if ((head) == NULL) {
-        return (*ptr1);
-      }
-
-      do {
-        swapped = 0;
-        ptr1 = head;
-
-        while ((ptr1)->pNext != lptr) {
-          if ((ptr1)->compareBy((ptr1)->pNext, type, direction)) {
-            this->swapNode((ptr1), (ptr1)->pNext);
-            swapped = 1;
-          }
-          (ptr1) = (ptr1)->pNext;
-        }
-        lptr = ptr1;
-      } while (swapped);
-      return ptr1;
-    }
-
-    void bubbleSort(TypeNode **head, string type, string direction) {
-      int swapped;
-      TypeNode **ptr1;
-      TypeNode **lptr = NULL;
-
-      if ((*head) == NULL) {
-        return;
-      }
-
-      do {
-        swapped = 0;
-        ptr1 = head;
-
-        while ((*ptr1)->pNext != (*lptr)) {
-          if ((*ptr1)->compareBy((*ptr1)->pNext, type, direction)) {
-            this->swapNode(ptr1, &((*ptr1)->pNext));
-            swapped = 1;
-          }
-          (*ptr1) = (*ptr1)->pNext;
-        }
-        lptr = ptr1;
-      } while (swapped);
-    }
-
-    void mergeSort(TypeNode **headRef, string type, string direction) {
-      TypeNode *head = *headRef;
-      TypeNode *a, *b;
-      //cout << head->compareBy(*headRef, "name_article", "asc");
-      //cin.get();
-
-      if (head == NULL || head->pNext == NULL) {
-        return;
-      }
-
-      this->frontBacksplit(head, &a, &b);
-
-      cout << "123123" << a->article->show();
-      cout <<  "123123" << b->article->show();
-      mergeSort(&a, type, direction);
-      cin.get();
-      mergeSort(&b, type, direction);
-
-      (*headRef) = this->sortedMerge(a, b, type, direction);
-    }
-
     void readFileToScreen(string fileName) {
       ifstream file(fileName);
 
@@ -120,51 +37,6 @@ class Helper {
         cout << text + "\n";
       }
       cout << endl;
-    }
-
-  private:
-    void swapNode(TypeNode **nodeA, TypeNode **nodeB) {
-      TypeNode **nodeTmp = nodeA;
-      (*nodeA)->article = (*nodeB)->article;
-      (*nodeB)->article = (*nodeTmp)->article;
-    }
-
-    TypeNode *sortedMerge(TypeNode *a, TypeNode *b, string type, string direction) {
-      TypeNode *result = NULL;
-
-      if (a == NULL)
-        return b;
-
-      if (b == NULL)
-        return a;
-      cout << a->compareBy(b, type, direction);
-      if (a->compareBy(b, type, direction)) {
-        result = a;
-        result->pNext = this->sortedMerge(a->pNext, b, type, direction);
-      }
-      else {
-        result = b;
-        result->pNext = this->sortedMerge(a, b->pNext, type, direction);
-      }
-
-      return result;
-    }
-
-    void frontBacksplit(TypeNode *source, TypeNode **frontRef, TypeNode **backRef) {
-      TypeNode *fast = source;
-      TypeNode *slow = source->pNext;
-
-      while (fast != NULL) {
-        fast = fast->pNext;
-        if (fast != NULL) {
-          slow = slow->pNext;
-          fast = fast->pNext;
-        }
-      }
-
-      (*frontRef) = source;
-      (*backRef) = slow->pNext;
-      slow->pNext = NULL;
     }
 };
 
@@ -396,6 +268,19 @@ class Article {
 
       return this;
     }
+
+    string toString() {
+      return this->getCodeArticle() + '|'
+        + this->getNameArticle() + '|'
+        + this->getNameMagazine() + '|'
+        + this->getCategoryMagazine() + '|'
+        + this->getNumberPublish() + '|'
+        + this->getEpisodePublish() + '|'
+        + this->getYearPublish() + '|'
+        + this->getCompanyPublish() + '|'
+        + this->getAuthor() +  '\n';
+    }
+
     private:
       void createSpace(string &str, int numSpace) {
         while (str.length() < numSpace) {
@@ -479,10 +364,9 @@ class ArticleNode {
 
     bool compareTwoStr(string a, string b, string direction) {
       int result = a.compare(b);
-
-      if (direction == "asc" && (!~result || !result))
+      if (direction == "desc" && (!~result || !result))
         return true;
-      if (direction == "desc" && (result == 1))
+      if (direction == "asc" && (result > 0))
         return true;
 
       return false;
@@ -500,18 +384,13 @@ class ArticleList {
     ArticleTile titles;
 
   public:
-    Helper<ArticleNode> *helper;
-
-  public:
-    ArticleList(Helper<ArticleNode> *helper) {
+    ArticleList() {
       this->articleHead = NULL;
       this->articleTail = NULL;
-      this->helper = helper;
     }
-    ArticleList(Helper<ArticleNode> *helper, string fileArticles) {
+    ArticleList(string fileArticles) {
       this->articleHead = NULL;
       this->articleTail = NULL;
-      this->helper = helper;
       this->createListFromFile(fileArticles);
     }
 
@@ -594,13 +473,25 @@ class ArticleList {
     }
 
     ArticleList *sortArticles(string type, string direction) {
-      //this->articleHead = this->helper->bubbleSort2(this->articleHead, type, direction);
-      this->helper->bubbleSort(&this->articleHead, type, direction);
+      ArticleNode **head = &this->articleHead; 
+      ArticleNode **i;
+
+      while ((*head)->pNext != NULL) {
+        i = &(*head)->pNext;
+        while (*i != NULL) {
+          if ((*head)->compareBy(*i, type, direction)) {
+            this->swapNode(&(*head)->article, &(*i)->article);
+          }
+          i = &(*i)->pNext;
+        }
+        head = &(*head)->pNext;
+      }
+
       return this;
     }
 
     ArticleList *searchArticles(string type, string strMatch) {
-      ArticleList *articles = new ArticleList(this->helper);
+      ArticleList *articles = new ArticleList();
       for (ArticleNode *node = this->articleHead; node != NULL; node = node->pNext) {
         if (node->findArticleBy(type, strMatch)) {
           articles->pushArticle(node->article);
@@ -608,6 +499,7 @@ class ArticleList {
       }
       this->titles.show();
       articles->getAll();
+
       return articles;
     }
 
@@ -653,14 +545,24 @@ class ArticleList {
         cout << "Not found data\n";
         return this;
       }
-      if (this->titles.created) {
-        this->titles.show();
-      }
-      int i = 1;
+      if (this->titles.created) this->titles.show();
+
       for (ArticleNode *node = this->articleHead; node != NULL; node = node->pNext) {
         node->article->show();
       }
 
+      return this;
+    }
+
+    ArticleList *exportToFile(string fileName) {
+      ofstream fileArticles;
+      fileArticles.open(fileName, std::ofstream::out | std::ofstream::trunc);
+      string content;
+      for (ArticleNode *node = this->articleHead; node != NULL; node = node->pNext) {
+        content += node->article->toString();
+      }
+      fileArticles << content;
+      fileArticles.close();
       return this;
     }
 
@@ -672,8 +574,10 @@ class ArticleList {
       return 1 + this->getLengthList(headNode->pNext);
     }
 
-
-    void sortByAlphabet() {
+    void swapNode(Article **articleA, Article **articleB) {
+      Article *articleTmp = *articleA;
+      (*articleA) = (*articleB);
+      (*articleB) = articleTmp;
     }
 };
 
@@ -689,7 +593,6 @@ class MenuArticles
     }
 
     void showMainMenu() {
-      int numSelect;
       cout << "++++++++++++++ Main Menu ++++++++++++++" << endl;
       cout << "1. Export data to screen" << endl;
       cout << "2. Create article" << endl;
@@ -697,14 +600,13 @@ class MenuArticles
       cout << "4. Delete article by code_article" << endl;
       cout << "5. Search article by: " << endl;
       cout << "6. Sort article by: " << endl;
+      cout << "7. Export data to file" << endl;
+      cout << "8. Exit" << endl;
       cout << "+++++++++++++++++++++++++++++++++++++++" << endl;
       cout << "Enter choice of you: ";
       cin >> this->numSelect;
       this->numSelect = this->isCheckDataInput(this->numSelect);
-      this->handleMainMenu()->showMainMenu();
-      //if (this->numSelect) {
-      //  this->showCreateMenu();
-      //}
+      this->handleMainMenu();
     }
 
   private:
@@ -722,40 +624,53 @@ class MenuArticles
       }
       return numSelected;
     }
+
     MenuArticles *handleMainMenu() {
       switch (this->numSelect) {
-      case 1: {
-        this->articles->getAll();
-        break;
+        case 1: {
+          this->articles->getAll();
+          break;
+        }
+        case 2: {
+          this->showCreateMenu();
+          break;
+        }
+        case 3: {
+          this->showUpdateMenu();
+          break;
+        }
+        case 4: {
+          string strMatch;
+          cout << "Enter article code: ";
+          cin >> strMatch;
+          this->articles->deleteArticles(strMatch)->getAll();
+          break;
+        }
+        case 5: {
+          this->showSearchMenu();
+          break;
+        }
+        case 6: {
+          this->showSortMenu();
+          break;
+        }
+        case 7: {
+          string fileNameExport;
+          cout << "Please enter file name with extension txt: "; cin >> fileNameExport;
+          this->articles->exportToFile(fileNameExport);
+          break;
+        }
+        case 8: {
+          if (system("CLS")) system("clear");
+          return this;
+        }
+        default: {
+          cout << "Not found your selection. Please choice again";
+          break;
+        }
       }
-      case 2: {
-        this->showCreateMenu();
-        break;
-      }
-      case 3: {
-        this->showUpdateMenu();
-        break;
-      }
-      case 4: {
-        string strMatch;
-        cout << "Enter article code: ";
-        cin >> strMatch;
-        this->articles->deleteArticles(strMatch)->getAll();
-        break;
-      }
-      case 5: {
-        this->showSearchMenu();
-        break;
-      }
-      case 6: {
-        this->showSortMenu();
-        break;
-      }
-      default: {
-        cout << "Not found your selection. Please choice again";
-        break;
-      }
-      }
+
+      this->showMainMenu();
       return this;
     }
 
@@ -886,10 +801,14 @@ class MenuArticles
 
     MenuArticles *handleSortArticles() {
       cin >> this->numSelect;
+      this->numSelect = this->isCheckDataInput(this->numSelect);
+
       int direction = 1;
       cout << "1. Sort up ascending\n";
       cout << "2. Sort descending\n";
       cin >> direction;
+      direction = this->isCheckDataInput(direction);
+
       string type = "name_article";
       string directionStr = "asc";
 
@@ -905,8 +824,7 @@ class MenuArticles
 
 int main() {
   string articleFileName = "./data_article.txt";
-  Helper<ArticleNode> *helper = new Helper<ArticleNode>();
-  ArticleList *articles = new ArticleList(helper, articleFileName);
+  ArticleList *articles = new ArticleList(articleFileName);
   MenuArticles *menu = new MenuArticles(articles);
 
   menu->showMainMenu();
