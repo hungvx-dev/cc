@@ -455,7 +455,7 @@ class ArticleList {
       for (ArticleNode **node = &this->articleHead; *node != NULL; node = &(*node)->pNext) {
         if ((*node)->findArticleBy("code_article", codeArticle)) {
           if ((*node) == NULL) {
-            cout << "The given previous node cannot be NULL";
+            cout << "The given previous node cannot be NULL \n";
             return this;
           }
           ArticleNode *articleNode = this->createArticleNode(article);
@@ -468,13 +468,18 @@ class ArticleList {
         }
       }
 
-      cout << "Not found article with code_article: " << codeArticle;
+      cout << "Not found article with code_article: " << codeArticle << '\n';
       return this;
     }
 
     ArticleList *sortArticles(string type, string direction) {
       ArticleNode **head = &this->articleHead; 
       ArticleNode **i;
+
+      if ((*head) == NULL) {
+        cout << "Not found data\n";
+        return this;
+      }
 
       while ((*head)->pNext != NULL) {
         i = &(*head)->pNext;
@@ -491,6 +496,11 @@ class ArticleList {
     }
 
     ArticleList *searchArticles(string type, string strMatch) {
+      if (this->articleHead == NULL) {
+        cout << "Not found data\n";
+        return this;
+      }
+
       ArticleList *articles = new ArticleList();
       for (ArticleNode *node = this->articleHead; node != NULL; node = node->pNext) {
         if (node->findArticleBy(type, strMatch)) {
@@ -628,6 +638,7 @@ class MenuArticles
     MenuArticles *handleMainMenu() {
       switch (this->numSelect) {
         case 1: {
+          if (system("CLS")) system("clear");
           this->articles->getAll();
           break;
         }
@@ -827,7 +838,7 @@ int main() {
   ArticleList *articles = new ArticleList(articleFileName);
   MenuArticles *menu = new MenuArticles(articles);
 
+  cout << "Topic 17: Management of scientific articles using linked list. \n";
   menu->showMainMenu();
-  //readFileToScreen(articleFileName);
   return 0;
 }
