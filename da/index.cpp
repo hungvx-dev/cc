@@ -228,10 +228,7 @@ class Article {
       return this;
     }
 
-    Article *update(int numberCase) {
-      string data;
-      cout << "value: ";
-      cin >> data;
+    Article *update(int numberCase, string data) {
       switch (numberCase) {
         case 1:
           this->setCodeArticle(data);
@@ -281,22 +278,23 @@ class Article {
         + this->getAuthor() +  '\n';
     }
 
+
+    string createSpaceWithStr(string content, int totalSpace, int numSpaceLeft = 1) {
+      string spaceRight = "";
+      string spaceLeft = "";
+      int numSpaceRight = totalSpace - numSpaceLeft - content.length();
+
+      this->createSpace(spaceRight, numSpaceRight);
+      this->createSpace(spaceLeft, numSpaceLeft);
+
+      return spaceLeft + content + spaceRight;
+    }
+
     private:
       void createSpace(string &str, int numSpace) {
         while (str.length() < numSpace) {
           str += " ";
         }
-      }
-
-      string createSpaceWithStr(string content, int totalSpace, int numSpaceLeft = 1) {
-        string spaceRight = "";
-        string spaceLeft = "";
-        int numSpaceRight = totalSpace - numSpaceLeft - content.length();
-
-        this->createSpace(spaceRight, numSpaceRight);
-        this->createSpace(spaceLeft, numSpaceLeft);
-
-        return spaceLeft + content + spaceRight;
       }
 
       CategoryMagazine convertStrToEnumCategory(string str) {
@@ -518,7 +516,19 @@ class ArticleList {
         if ((*node)->findArticleBy(type, strMatch)) {
           this->titles.show();
           (*node)->article->show();
-          (*node)->article->update(fieldUpdate);
+          
+          string data;
+          cout << "Enter value need update: ";
+          cin >> data;
+
+          if ((*node)->article->getCodeArticle() == data) {
+            return this;
+          } else if (fieldUpdate == 1 && this->checkArticleExist(data) > 0) {
+            cout << "Can't update article. Article is existed\n";
+            return this; 
+          }
+
+          (*node)->article->update(fieldUpdate, data);
           return this;
         }
       }
@@ -550,6 +560,30 @@ class ArticleList {
       return this;
     }
 
+    ArticleList *statisticsByCategory() {
+      int statisticsCategory[] = {0, 0, 0, 0, 0};
+      int amountCategory = sizeof(enumStr)/sizeof(enumStr[0]);
+      for (ArticleNode *node = this->articleHead; node !=NULL; node = node->pNext) {
+        for (int i = 0; i < amountCategory; i++) {
+          if (node->article->getCategoryMagazine() == enumStr[i]) {
+            if(!statisticsCategory[i]) statisticsCategory[i] = 0;
+            statisticsCategory[i] += 1;
+            break;
+          }
+        }
+      }
+
+
+      int sizeResult = sizeof(statisticsCategory)/sizeof(statisticsCategory[0]);
+      cout << "--------------------------\n";
+      cout << "Loại tạp chí | Số lượng \n";
+      for (int i = 0; i < sizeResult; i++) {
+        cout << this->articleHead->article->createSpaceWithStr(enumStr[i], 13, 0) << "| "<< statisticsCategory[i] << "\n";
+      }
+
+      return this;
+    }
+
     ArticleList *getAll() {
       if (this->articleHead == NULL) {
         cout << "Not found data\n";
@@ -574,6 +608,17 @@ class ArticleList {
       fileArticles << content;
       fileArticles.close();
       return this;
+    }
+
+    int checkArticleExist(string strMatch) {
+      int check = 0;
+      for (ArticleNode *node = this->articleHead; node != NULL; node = node->pNext) {
+        if (node->article->getCodeArticle() == strMatch) {
+          check += 1;
+        }
+      }
+
+      return check;
     }
 
   private:
@@ -611,7 +656,8 @@ class MenuArticles
       cout << "5. Search article by: " << endl;
       cout << "6. Sort article by: " << endl;
       cout << "7. Export data to file" << endl;
-      cout << "8. Exit" << endl;
+      cout << "8. Statictis by category's" << endl;
+      cout << "9. Exit" << endl;
       cout << "+++++++++++++++++++++++++++++++++++++++" << endl;
       cout << "Enter choice of you: ";
       cin >> this->numSelect;
@@ -672,6 +718,10 @@ class MenuArticles
           break;
         }
         case 8: {
+          this->articles->statisticsByCategory();
+          break;
+        }
+        case 9: {
           if (system("CLS")) system("clear");
           return this;
         }
@@ -743,6 +793,11 @@ class MenuArticles
       this->numSelect = this->isCheckDataInput(this->numSelect);
       Article *article = new Article();
       article->createFromScreen();
+      
+      if(this->articles->checkArticleExist(article->getCodeArticle())) {
+        cout << "Can't create article. Article is existed\n";
+        return this;
+      }
 
       switch (this->numSelect) {
         case 1: {
@@ -773,10 +828,9 @@ class MenuArticles
       string strMatch;
       int fieldUpdate;
       cin >> fieldUpdate;
-      cout << "Enter article code: ";
+      cout << "Enter the article code you need to update: ";
       fieldUpdate = this->isCheckDataInput(fieldUpdate);
       cin >> strMatch;
-      cout << "Enter field need update: ";
       this->articles->updateArticles(strMatch, fieldUpdate)->getAll();
       return this;
     }
