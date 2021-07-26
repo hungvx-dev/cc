@@ -892,7 +892,11 @@ int main() {
   ArticleList *articles = new ArticleList(articleFileName);
   MenuArticles *menu = new MenuArticles(articles);
 
-  cout << "Topic 17: Management of scientific articles using linked list. \n";
+  cout << "------------Introduction--------------------------------------\n";
+  cout << "Topic 17:   Management of scientific articles using linked list. \n";
+  cout << "Instructor: M.Sc Do Thi Tuyet Hoa.  \n";
+  cout << "Student:    Vo Xuan Hung - 15TCLC1. \n";
+  cout << "Student:    Nguyen Van Thanh - 17T3 \n";
   menu->showMainMenu();
   return 0;
 }
